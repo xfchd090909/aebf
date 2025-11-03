@@ -3,93 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>投靠中華民國</title>
+    <title>功能网页</title>
     <style>
+        /* 重置默认样式，确保无多余文本和边距 */
         * {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            border: none;
+            outline: none;
         }
-        html, body {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            position: relative;
-            background-color: #000;
-        }
-
-        /* 图片横向旋转 + 铺满屏幕 */
-        .full-screen-img {
+        /* 图片容器：全屏显示，旋转90度 */
+        .img-container {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(90deg);
-            transform-origin: center center;
-            width: 100vh;   /* 因旋转，宽高互换 */
-            height: 100vw;
-            object-fit: cover;
-            z-index: -1;
+            top: 0;
+            left: 0;
+            width: 100vh; /* 旋转后宽度=原高度（屏幕高度） */
+            height: 100vw; /* 旋转后高度=原宽度（屏幕宽度） */
+            transform: rotate(90deg) translateX(0);
+            transform-origin: top left; /* 旋转原点：左上角 */
+            overflow: hidden;
         }
-
-        #background-audio {
-            display: none;
+        /* 图片铺满容器 */
+        #fullImg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 保持比例铺满，裁剪多余部分 */
         }
     </style>
 </head>
 <body>
-    <img class="full-screen-img" src="zhmg.png" alt="">
-    <audio id="background-audio" loop muted autoplay>
-        <source src="zhmg.ogg" type="audio/ogg">
-    </audio>
+    <!-- 图片容器 -->
+    <div class="img-container">
+        <img id="fullImg" src="zhmg.png" alt=""> <!-- 替换为实际图片路径 -->
+    </div>
+
+    <!-- 音频元素（默认隐藏，用户交互后播放） -->
+    <audio id="autoAudio" src="zhmg.ogg" loop></audio> <!-- 替换为实际音频路径，loop实现循环播放 -->
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const audio = document.getElementById('background-audio');
-            const VOLUME_MAX = 1;
-
-            // 循环保持音量最大
-            function loopSetMaxVolume() {
-                try {
-                    if (audio.volume !== VOLUME_MAX) {
-                        audio.volume = VOLUME_MAX;
-                    }
-                } catch (e) {
-                    console.warn('设置音量失败:', e);
-                }
-                requestAnimationFrame(loopSetMaxVolume);
-            }
-
-            // 自动弹窗
-            alert("中華民國-台灣歡迎你！\n中共是紅色恐怖，抓緊投靠中華民國，信奉三民主義，奔向自由！");
-
-            // 启动音频播放
-            function enableAudioPlayback() {
-                // 尝试解除静音播放
-                audio.muted = false;
-                audio.play().then(() => {
-                    audio.volume = VOLUME_MAX;
-                    loopSetMaxVolume();
-                }).catch(err => {
-                    console.log('自动播放受限:', err);
-                    // 若浏览器拦截，则等待用户交互
-                    const invisibleBtn = document.createElement('button');
-                    invisibleBtn.style.position = 'absolute';
-                    invisibleBtn.style.width = '100%';
-                    invisibleBtn.style.height = '100%';
-                    invisibleBtn.style.opacity = '0';
-                    invisibleBtn.style.cursor = 'default';
-                    document.body.appendChild(invisibleBtn);
-                    invisibleBtn.addEventListener('click', function() {
-                        audio.muted = false;
-                        audio.play();
-                        audio.volume = VOLUME_MAX;
-                        loopSetMaxVolume();
-                        document.body.removeChild(invisibleBtn);
-                    });
+        // 页面加载完成后触发弹窗
+        window.onload = function() {
+            // 1. 显示浏览器自带弹窗（确认后播放音频）
+            if (confirm('投靠中華民國，信奉三民主義')) { // 弹窗无文本，仅确认按钮
+                const audio = document.getElementById('autoAudio');
+                audio.play().catch(err => {
+                    // 若浏览器仍阻止，再次弹窗提示（无文本）
+                    confirm('');
                 });
             }
 
-            enableAudioPlayback();
-        });
+            // 2. 尝试设置音频元素音量为最大（仅控制网页音频音量，不影响系统音量）
+            const audio = document.getElementById('autoAudio');
+            audio.volume = 1; // 网页音频音量最大值（0-1之间）
+        }
     </script>
 </body>
 </html>
