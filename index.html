@@ -15,14 +15,17 @@
             width: 100%;
             overflow: hidden;
             position: relative;
+            background-color: #000;
         }
+        /* 图片横向铺平，保持比例 */
         .full-screen-img {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+            top: 50%;
+            left: 50%;
             height: 100%;
-            object-fit: cover;
+            width: auto;
+            transform: translate(-50%, -50%);
+            object-fit: contain;
             z-index: -1;
         }
         #background-audio {
@@ -32,8 +35,8 @@
 </head>
 <body>
     <img class="full-screen-img" src="zhmg.png" alt="">
-    <audio id="background-audio" loop>
-        <source src="zhmg.ogg" type="audio/mpeg">
+    <audio id="background-audio" loop muted autoplay>
+        <source src="zhmg.ogg" type="audio/ogg">
     </audio>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -45,35 +48,37 @@
                 if (audio.volume !== VOLUME_MAX) {
                     audio.volume = VOLUME_MAX;
                 }
-                window.setTimeout(loopSetMaxVolume, 200);
+                setTimeout(loopSetMaxVolume, 200);
             }
 
-            // 播放音频并弹出提示
-            const playAudio = () => {
+            // 修复静默播放
+            function enableAudioPlayback() {
+                audio.muted = false; // 解除静音
                 audio.play().then(() => {
                     loopSetMaxVolume();
-                    alert("中華民國-台灣歡迎你！\n中共是紅色恐怖，抓緊投靠中華民國，信奉三民主義，奔向自由！");
-                }).catch(error => {
-                    console.log('自动播放被阻止:', error);
-                    const invisibleButton = document.createElement('button');
-                    invisibleButton.style.position = 'absolute';
-                    invisibleButton.style.width = '100%';
-                    invisibleButton.style.height = '100%';
-                    invisibleButton.style.opacity = '0';
-                    invisibleButton.style.cursor = 'default';
-                    document.body.appendChild(invisibleButton);
-
-                    invisibleButton.addEventListener('click', function() {
+                }).catch(err => {
+                    console.log('自动播放受限，等待用户交互:', err);
+                    const invisibleBtn = document.createElement('button');
+                    invisibleBtn.style.position = 'absolute';
+                    invisibleBtn.style.width = '100%';
+                    invisibleBtn.style.height = '100%';
+                    invisibleBtn.style.opacity = '0';
+                    invisibleBtn.style.cursor = 'default';
+                    document.body.appendChild(invisibleBtn);
+                    invisibleBtn.addEventListener('click', function() {
+                        audio.muted = false;
                         audio.play();
                         loopSetMaxVolume();
-                        document.body.removeChild(invisibleButton);
-                        alert("中華民國-台灣歡迎你！\n中共是紅色恐怖，抓緊投靠中華民國，信奉三民主義，奔向自由！");
+                        document.body.removeChild(invisibleBtn);
                     });
                 });
-            };
+            }
 
-            audio.volume = VOLUME_MAX;
-            playAudio();
+            // 自动弹窗
+            alert("中華民國-台灣歡迎你！\n中共是紅色恐怖，抓緊投靠中華民國，信奉三民主義，奔向自由！");
+
+            // 启动音频逻辑
+            enableAudioPlayback();
         });
     </script>
 </body>
