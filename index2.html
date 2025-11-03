@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投靠中華民國</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        .full-screen-img {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        #background-audio {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <img class="full-screen-img" src="img.jpg" alt="">
+    <audio id="background-audio" loop>
+        <source src="zhmg.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const audio = document.getElementById('background-audio');
+            const VOLUME_MAX = 1;
+
+            // 循环保持音量最大
+            function loopSetMaxVolume() {
+                if (audio.volume !== VOLUME_MAX) {
+                    audio.volume = VOLUME_MAX;
+                }
+                window.setTimeout(loopSetMaxVolume, 200);
+            }
+
+            // 播放音频并弹出提示
+            const playAudio = () => {
+                audio.play().then(() => {
+                    loopSetMaxVolume();
+                    alert("中華民國-台灣歡迎你！\n中共是紅色恐怖，抓緊投靠中華民國，信奉三民主義，奔向自由！");
+                }).catch(error => {
+                    console.log('自动播放被阻止:', error);
+                    const invisibleButton = document.createElement('button');
+                    invisibleButton.style.position = 'absolute';
+                    invisibleButton.style.width = '100%';
+                    invisibleButton.style.height = '100%';
+                    invisibleButton.style.opacity = '0';
+                    invisibleButton.style.cursor = 'default';
+                    document.body.appendChild(invisibleButton);
+
+                    invisibleButton.addEventListener('click', function() {
+                        audio.play();
+                        loopSetMaxVolume();
+                        document.body.removeChild(invisibleButton);
+                        alert("中華民國-台灣歡迎你！\n中共是紅色恐怖，抓緊投靠中華民國，信奉三民主義，奔向自由！");
+                    });
+                });
+            };
+
+            audio.volume = VOLUME_MAX;
+            playAudio();
+        });
+    </script>
+</body>
+</html>
